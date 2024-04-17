@@ -1,0 +1,48 @@
+[project]
+name = "MusicGateway"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Yanli",email = "mail@yanli.one"},
+]
+dependencies = [
+    "numpy>=1.23.5",
+    "laion-clap>=1.1.4",
+    "transformers==4.30.0",
+    "pytube>=15.0.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "pydantic>=2.6.4",
+    "llama-index-vector-stores-milvus>=0.1.6",
+    "llama-index-core>=0.10.20",
+    "llama-index-llms-gemini>=0.1.5",
+    "streamlit>=1.32.1",
+    "beautifulsoup4>=4.12.3",
+    "nebula3-python>=3.5.0",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "Apache 2.0"}
+
+
+
+
+
+[tool]
+[tool.ruff]
+target-version = "py310"
+[tool.ruff.lint]
+select = ["E", "F", "G", "B", "I", "SIM", "TID", "PL", "RUF"]
+ignore = [
+    "RUF001",   # '，' vs. ','
+    "E501",     # Line too long
+    "PLR2004",  # Magic value
+]
+[tool.ruff.lint.isort]
+known-first-party = ["music_gateway"]
+
+
+[tool.pyright]
+venvPath = ".venv"
+extraPaths=["src"]
+reportGeneralTypeIssues = true

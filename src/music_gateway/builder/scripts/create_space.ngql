@@ -1,0 +1,18 @@
+CREATE SPACE IF NOT EXISTS music_gateway (replica_factor = 1, vid_type=FIXED_STRING(32));
+USE music_gateway;
+
+CREATE TAG IF NOT EXISTS artist(name string, bio_content string);
+CREATE TAG IF NOT EXISTS album(name string, wiki_content string, image_url string);
+CREATE TAG IF NOT EXISTS music(name string, url string, ytb_url string, wiki string);
+CREATE TAG IF NOT EXISTS emotions(name string);
+CREATE TAG IF NOT EXISTS hashtags(name string);
+
+CREATE EDGE IF NOT EXISTS created_by();
+CREATE EDGE IF NOT EXISTS belong_to();
+CREATE EDGE IF NOT EXISTS with_tag();
+
+CREATE TAG INDEX IF NOT EXISTS artist_index ON artist(name(64));
+CREATE TAG INDEX IF NOT EXISTS album_index ON album(name(64));
+CREATE TAG INDEX IF NOT EXISTS music_index ON music(name(64));
+CREATE TAG INDEX IF NOT EXISTS emotions_index ON emotions(name(64));
+CREATE TAG INDEX IF NOT EXISTS tags_index ON hashtags(name(64));
