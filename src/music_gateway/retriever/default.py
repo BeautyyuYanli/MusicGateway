@@ -20,11 +20,20 @@ milvus = MilvusVectorStore(
 
 def search_by_direct_text(text: str, top_k=3) -> List[str]:
     emb = clap_emb_model.emb_texts([text])[0]
+    return search_emb(emb.tolist(), top_k)
+
+
+def search_by_audio(audio_path: str, top_k=3) -> List[str]:
+    emb = clap_emb_model.emb_audios([audio_path])[0]
+    return search_emb(emb.tolist(), top_k)
+
+
+def search_emb(emb: List[float], top_k=3) -> List[str]:
     while True:
         try:
             res = milvus.query(
                 VectorStoreQuery(
-                    query_embedding=emb.tolist(),
+                    query_embedding=emb,
                     similarity_top_k=top_k,
                 )
             )
@@ -36,4 +45,4 @@ def search_by_direct_text(text: str, top_k=3) -> List[str]:
 
 
 if __name__ == "__main__":
-    print(search_by_direct_text("It is a happy song."))
+    print(search_by_audio("tests/data/FocalorsSacrifice.webm"))
