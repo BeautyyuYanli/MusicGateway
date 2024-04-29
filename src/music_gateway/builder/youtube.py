@@ -5,9 +5,11 @@ import numpy as np
 from pytube import YouTube
 
 from music_gateway.emb_model import clap_emb_model
+from contextlib import contextmanager
 
 
-def vector_from_youtube(url: str) -> np.ndarray:
+@contextmanager
+def download_youtube(url: str):
     s = YouTube(url=url).streams.filter(type="audio").order_by("abr").desc().first()
     if s is not None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -16,11 +18,20 @@ def vector_from_youtube(url: str) -> np.ndarray:
                 filename="tmp.audio",
                 max_retries=5,
             )
-            file_path = Path(tmp_dir) / "tmp.audio"
-            vec = clap_emb_model.emb_audios([str(file_path)])[0]
-        return vec
+            yield Path(tmp_dir) / "tmp.audio", s.mime_type
     else:
         raise ValueError("No audio stream found")
+
+
+def vector_from_youtube(url: str) -> np.ndarray:
+    with download_youtube(url) as (file_path, _mime):
+        vec = clap_emb_model.emb_audios([str(file_path)])[0]
+        return vec
+
+
+def bytes_from_youtube(url: str):
+    with download_youtube(url) as (file_path, mime):
+        return file_path.read_bytes(), mime
 
 
 if __name__ == "__main__":

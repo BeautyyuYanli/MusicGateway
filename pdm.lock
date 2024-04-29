@@ -5,7 +5,26 @@
 groups = ["default"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:ac735de4afdc7eef079f9f9dd2cfbc1b7ac0afb8d9ac9ec5037624cc1ccc26cc"
+content_hash = "sha256:b4aee396dbabdc0282c784d5c7420456932bd10c626749dbf4876f7572f0f530"
+
+[[package]]
+name = "agent-path"
+version = "0.1.2"
+requires_python = ">=3.10"
+summary = "Default template for PDM package"
+groups = ["default"]
+dependencies = [
+    "fancy-printer==0.1",
+    "jinja2>=3.1.3",
+    "llama-index-agent-openai>=0.2.2",
+    "llama-index-core>=0.10.30",
+    "llama-index-llms-openai>=0.1.16",
+    "python-dotenv>=1.0.1",
+]
+files = [
+    {file = "agent_path-0.1.2-py3-none-any.whl", hash = "sha256:bc481ef06eb47567be026358a74134d12c365482594ff4c20135a936b42ffc18"},
+    {file = "agent_path-0.1.2.tar.gz", hash = "sha256:249993f2a218b0a734a8830b7c6368ddf173ba0ee3f5e5bf67707c251e84676b"},
+]
 
 [[package]]
 name = "aiohttp"
@@ -586,6 +605,17 @@ files = [
 ]
 
 [[package]]
+name = "fancy-printer"
+version = "0.1.0"
+requires_python = ">=3.8"
+summary = "A fancy print function for Python"
+groups = ["default"]
+files = [
+    {file = "fancy_printer-0.1.0-py3-none-any.whl", hash = "sha256:f28e1c26a92dcc8a7d83594c3d4bf1df7074da496f9b7da551def94ffcd1e5f5"},
+    {file = "fancy_printer-0.1.0.tar.gz", hash = "sha256:2c72a4e74510d5924a38792e7a5b395b5cc8602a92a59167ac6c769334ebbd12"},
+]
+
+[[package]]
 name = "filelock"
 version = "3.13.1"
 requires_python = ">=3.8"
@@ -1161,8 +1191,24 @@ files = [
 ]
 
 [[package]]
+name = "llama-index-agent-openai"
+version = "0.2.3"
+requires_python = "<4.0,>=3.8.1"
+summary = "llama-index agent openai integration"
+groups = ["default"]
+dependencies = [
+    "llama-index-core<0.11.0,>=0.10.30",
+    "llama-index-llms-openai<0.2.0,>=0.1.5",
+    "openai>=1.14.0",
+]
+files = [
+    {file = "llama_index_agent_openai-0.2.3-py3-none-any.whl", hash = "sha256:3782b24dd611364e391672dadc8308efd58d731a097c34a40e29f28c3abc5034"},
+    {file = "llama_index_agent_openai-0.2.3.tar.gz", hash = "sha256:c899d90b32036656a8ef86d0f0378d4168e00eb2d75a10901eab58ba5b2656a4"},
+]
+
+[[package]]
 name = "llama-index-core"
-version = "0.10.26"
+version = "0.10.33"
 requires_python = "<4.0,>=3.8.1"
 summary = "Interface between LLMs and your data"
 groups = ["default"]
@@ -1175,7 +1221,7 @@ dependencies = [
     "dirtyjson<2.0.0,>=1.0.8",
     "fsspec>=2023.5.0",
     "httpx",
-    "llamaindex-py-client<0.2.0,>=0.1.15",
+    "llamaindex-py-client<0.2.0,>=0.1.18",
     "nest-asyncio<2.0.0,>=1.5.8",
     "networkx>=3.0",
     "nltk<4.0.0,>=3.8.1",
@@ -1192,8 +1238,8 @@ dependencies = [
     "wrapt",
 ]
 files = [
-    {file = "llama_index_core-0.10.26-py3-none-any.whl", hash = "sha256:e08886b9d353fb45f63d0011e78326627f1ee5c7761585fdd85a9a0dfdbf0365"},
-    {file = "llama_index_core-0.10.26.tar.gz", hash = "sha256:8ea27093a053aed79b7b5d80694152066ddaa5b70116308d48db382c76367a87"},
+    {file = "llama_index_core-0.10.33-py3-none-any.whl", hash = "sha256:943114fb02dfe62fec5d882d749ad8adf113081aadcb0d4cb2c083b2c9052ed0"},
+    {file = "llama_index_core-0.10.33.tar.gz", hash = "sha256:21b98b2c45e0c6b673aa505c7add1e8b730f472ad58d4572b909a34f4a22c36c"},
 ]
 
 [[package]]
@@ -1213,6 +1259,20 @@ files = [
 ]
 
 [[package]]
+name = "llama-index-llms-openai"
+version = "0.1.16"
+requires_python = "<4.0,>=3.8.1"
+summary = "llama-index llms openai integration"
+groups = ["default"]
+dependencies = [
+    "llama-index-core<0.11.0,>=0.10.24",
+]
+files = [
+    {file = "llama_index_llms_openai-0.1.16-py3-none-any.whl", hash = "sha256:4a9c0fe969302731907c8fa31631812397637e114a44ebbad11fd6c59def9315"},
+    {file = "llama_index_llms_openai-0.1.16.tar.gz", hash = "sha256:313bbc17c241992430a6bf686a1b1edc4276c8256ad6b0550aa1bea1e0fed1a6"},
+]
+
+[[package]]
 name = "llama-index-vector-stores-milvus"
 version = "0.1.6"
 requires_python = ">=3.8.1,<4.0"
@@ -1229,8 +1289,8 @@ files = [
 
 [[package]]
 name = "llamaindex-py-client"
-version = "0.1.15"
-requires_python = "<4.0,>=3.8"
+version = "0.1.19"
+requires_python = "<4,>=3.8"
 summary = ""
 groups = ["default"]
 dependencies = [
@@ -1238,8 +1298,8 @@ dependencies = [
     "pydantic>=1.10",
 ]
 files = [
-    {file = "llamaindex_py_client-0.1.15-py3-none-any.whl", hash = "sha256:d189f23a8f7f78d0e170f62b531dd6ac030eadcb7dd7d38c1b543c4c98c51e5c"},
-    {file = "llamaindex_py_client-0.1.15.tar.gz", hash = "sha256:c7ce26855ba976153bb40157c3c194223c6b75179935b988dd4bd6a3fe83aacb"},
+    {file = "llamaindex_py_client-0.1.19-py3-none-any.whl", hash = "sha256:fd9416fd78b97209bf323bc3c7fab314499778563e7274f10853ad560563d10e"},
+    {file = "llamaindex_py_client-0.1.19.tar.gz", hash = "sha256:73f74792bb8c092bae6dc626627a09ac13a099fa8d10f8fcc83e17a2b332cca7"},
 ]
 
 [[package]]

@@ -19,6 +19,7 @@ dependencies = [
     "streamlit>=1.32.1",
     "beautifulsoup4>=4.12.3",
     "nebula3-python>=3.5.0",
+    "agent-path>=0.1.2",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
