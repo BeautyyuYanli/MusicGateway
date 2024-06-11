@@ -33,7 +33,7 @@ st.info(f"当前数据库收录音乐: {cnt}")
 
 @st.cache_resource
 def get_llm():
-    return LLM(client=OpenAI("gpt-4"))
+    return LLM(client=OpenAI("gpt-4o"))
 
 
 llm = get_llm()
@@ -115,15 +115,17 @@ ONTOLOGY: Ontology description of a music, like "This is a happy drum." "This is
 TAGS: Tags that can appear in the music, like "disco" "electronic" "70s" "pop"
 EMOTIONS: Emotions that can be evoked by the music. These must be in some of {str(emotions)}
 
+All data except ONTOLOGY is optional, especially NAME, ARTIST, ALBUM should be null if can not be inferred.
+
 output format:
 ```json
 {{
-    "NAME": str,
-    "ARTIST": str,
-    "ALBUM": str,
+    "NAME": (optional)str,
+    "ARTIST": (optional)str,
+    "ALBUM": (optional)str,
     "ONTOLOGY": str,
-    "TAGS": List[str],
-    "EMOTIONS": List[str]
+    "TAGS": (optional)List[str],
+    "EMOTIONS": (optional)List[str]
 }}
 
 If some of the information is missing in the description, or you can not infer the information, you can omit the field.

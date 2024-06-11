@@ -4,12 +4,21 @@ import uuid
 import time
 import re
 import json
+from urllib.parse import quote, unquote
 
-from typing import Set, Dict
+from typing import Set, Dict, Any
 
 from dotenv import load_dotenv
+from nebula3.common.ttypes import Value
 from nebula3.Config import Config
-from nebula3.gclient.net import ConnectionPool, Session
+from nebula3.gclient.net import ConnectionPool, Session, SessionPool
+from nebula_llm.emb_models import SimpleOpenAIEmbModel
+from nebula_llm.llms import OpenAILLM
+from nebula_llm.stores import (
+    KnowledgeGraphStore,
+    LlamaIndexVectorStore,
+    NebulaGraphStore,
+)
 
 from music_gateway.spec import MusicInfo, AlbumInfo, ArtistInfo
 
@@ -27,41 +36,58 @@ def get_session():
     return session
 
 
-def escape_str(s: str):
-    return s.encode("unicode_escape").decode("utf-8").replace('"', '\\"')
+def get_prepare_params(mapping: Dict[str, Any]):
+    for i in mapping:
+        if isinstance(mapping[i], str):
+            val = Value()
+            val.set_sVal(mapping[i])
+            mapping[i] = val
+    return mapping
 
 
 def insert_music(session: Session, music: MusicInfo):
-    query = f'INSERT VERTEX music(name, url, ytb_url, wiki) VALUES "{uuid.UUID(music.mbid).hex}":("{escape_str(music.name)}", "{escape_str(music.url)}", "{escape_str(music.ytb_url)}", "{escape_str(music.wiki)}");'
-    resp = session.execute(query)
+    query = f'INSERT VERTEX music(name, url, ytb_url, wiki) VALUES "{uuid.UUID(music.mbid).hex}":($name, $url, $ytb_url, $wiki);'
+    resp = session.execute_parameter(
+        query,
+        get_prepare_params(
+            music.model_dump(include=["name", "url", "ytb_url", "wiki"])
+        ),
+    )
     if not resp.is_succeeded():
         raise Exception(resp.error_msg())
 
 
 def insert_artist(session: Session, artist: ArtistInfo):
-    query = f'INSERT VERTEX artist(name, bio_content) VALUES "{uuid.UUID(artist.mbid).hex}":("{escape_str(artist.name)}", "{escape_str(artist.bio_content)}");'
-    resp = session.execute(query)
+    query = f'INSERT VERTEX artist(name, bio_content) VALUES "{uuid.UUID(artist.mbid).hex}":($name, $bio_content));'
+    resp = session.execute_parameter(
+        query, get_prepare_params(artist.model_dump(include=["name", "bio_content"]))
+    )
     if not resp.is_succeeded():
         raise Exception(resp.error_msg())
 
 
 def insert_album(session: Session, album: AlbumInfo):
-    query = f'INSERT VERTEX album(name, wiki_content, image_url) VALUES "{uuid.UUID(album.mbid).hex}":("{escape_str(album.name)}", "{escape_str(album.wiki_content)}", "{escape_str(album.image_url)}");'
-    resp = session.execute(query)
+    query = f'INSERT VERTEX album(name, wiki_content, image_url) VALUES "{uuid.UUID(album.mbid).hex}":($name, $wiki_content, $image_url);'
+    resp = session.execute_parameter(
+        query,
+        get_prepare_params(
+            album.model_dump(include=["name", "wiki_content", "image_url"])
+        ),
+    )
     if not resp.is_succeeded():
         raise Exception(resp.error_msg())
 
 
 def insert_emotion(session: Session, name: str, emo_id: str):
-    query = f'INSERT VERTEX emotions(name) VALUES "{emo_id}":("{escape_str(name)}");'
-    resp = session.execute(query)
+    query = f'INSERT VERTEX emotions(name) VALUES "{emo_id}":($name);'
+    resp = session.execute_parameter(query, get_prepare_params({"name": name}))
     if not resp.is_succeeded():
         raise Exception(resp.error_msg())
 
 
 def insert_hashtag(session: Session, name: str, tag_id: str):
-    query = f'INSERT VERTEX hashtags(name) VALUES "{tag_id}":("{escape_str(name)}");'
-    resp = session.execute(query)
+    query = f'INSERT VERTEX hashtags(name) VALUES "{tag_id}":($name);'
+    resp = session.execute_parameter(query, get_prepare_params({"name": name}))
     if not resp.is_succeeded():
         raise Exception(resp.error_msg())
 
@@ -166,6 +192,34 @@ def batch_insert_album():
         session.release()
 
 
-batch_insert_artist()
-batch_insert_album()
+def get_kg():
+    return KnowledgeGraphStore(
+        NebulaGraphStore(
+            space="music_gateway",
+            verbose=True,
+        ),
+        vec_store=LlamaIndexVectorStore.from_milvus(
+            collection_name="music_gateway",
+            emb_model=SimpleOpenAIEmbModel(
+                "intfloat/multilingual-e5-large",
+                "DUMMY",
+                "http://127.0.0.1:8000",
+            ),
+            verbose=True,
+        ),
+        verbose=True,
+    )
+
+
+def batch_build_embedding():
+    get_kg().emb_graph()
+
+
 batch_insert_music()
+print("Done music")
+batch_insert_artist()
+print("Done artist")
+batch_insert_album()
+print("Done album")
+batch_build_embedding()
+print("Done embedding")
